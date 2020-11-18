@@ -1,0 +1,9 @@
+[Unit]
+Description=Boundary
+[Service]
+ExecStart=/usr/local/bin/boundary dev
+User=boundary
+Group=docker
+LimitMEMLOCK=infinity
+[Install]
+WantedBy=multi-user.target
