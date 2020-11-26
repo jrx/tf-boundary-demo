@@ -131,3 +131,43 @@ resource "boundary_target" "backend_servers_ssh" {
     boundary_host_set.backend_servers_ssh.id
   ]
 }
+
+# Create host catalog
+resource "boundary_host_catalog" "windows_servers" {
+  name        = "windows_servers"
+  description = "Windows servers host catalog"
+  type        = "static"
+  scope_id    = boundary_scope.tam_infra.id
+}
+
+# Create hosts
+resource "boundary_host" "windows_servers" {
+  for_each        = var.windows_server_ips
+  type            = "static"
+  name            = "windows_server_service_${each.value}"
+  description     = "Windows server host"
+  address         = each.key
+  host_catalog_id = boundary_host_catalog.windows_servers.id
+}
+
+# Create host set
+resource "boundary_host_set" "windows_servers_rdp" {
+  type            = "static"
+  name            = "windows_servers_rdp"
+  description     = "Host set for Windows servers"
+  host_catalog_id = boundary_host_catalog.windows_servers.id
+  host_ids        = [for host in boundary_host.windows_servers : host.id]
+}
+
+# create target for accessing windows servers on port :3389
+resource "boundary_target" "windows_servers_rdp" {
+  type         = "tcp"
+  name         = "Windows servers"
+  description  = "Windows RDP target"
+  scope_id     = boundary_scope.tam_infra.id
+  default_port = "3389"
+
+  host_set_ids = [
+    boundary_host_set.windows_servers_rdp.id
+  ]
+}

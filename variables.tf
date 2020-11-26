@@ -62,3 +62,18 @@ variable "test_instance_type" {
   description = "Boundary server instance type."
   default     = "t3.micro"
 }
+
+variable "num_win" {
+  description = "Specify the amount of test machines."
+  default     = 1
+}
+
+variable "win_instance_username" {
+  description = "Windows server username."
+  default     = "Boundary"
+}
+
+variable "win_instance_password" {
+  description = "Windows server password."
+  default     = "S3CRET!123"
+}
