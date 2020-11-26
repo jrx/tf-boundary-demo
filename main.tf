@@ -55,19 +55,19 @@ resource "null_resource" "ansible" {
   }
 }
 
-resource "aws_instance" "test" {
+resource "aws_instance" "linux" {
   ami                         = var.amis[var.aws_region]
-  instance_type               = var.test_instance_type
+  instance_type               = var.linux_instance_type
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.default.id]
   associate_public_ip_address = false
-  count                       = var.num_test
+  count                       = var.num_linux
 
   availability_zone = data.terraform_remote_state.vpc.outputs.aws_azs[count.index % length(data.terraform_remote_state.vpc.outputs.aws_azs)]
   subnet_id         = data.terraform_remote_state.vpc.outputs.aws_private_subnets[count.index % length(data.terraform_remote_state.vpc.outputs.aws_azs)]
 
   tags = {
-    Name  = "${var.cluster_name}-test-${count.index}"
+    Name  = "${var.cluster_name}-linux-${count.index}"
     Owner = var.owner
     # Keep = ""
     boundary = var.cluster_name
@@ -96,7 +96,7 @@ data "aws_ami" "windows-ami" {
 
 resource "aws_instance" "win" {
   ami                         = data.aws_ami.windows-ami.image_id
-  instance_type               = var.test_instance_type
+  instance_type               = var.win_instance_type
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.default.id]
   associate_public_ip_address = false

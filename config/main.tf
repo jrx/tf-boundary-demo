@@ -93,42 +93,42 @@ resource "boundary_role" "project_admin" {
 }
 
 # Create host catalog
-resource "boundary_host_catalog" "backend_servers" {
-  name        = "backend_servers"
-  description = "Backend servers host catalog"
+resource "boundary_host_catalog" "linux_servers" {
+  name        = "linux_servers"
+  description = "Linux servers host catalog"
   type        = "static"
   scope_id    = boundary_scope.tam_infra.id
 }
 
 # Create hosts
-resource "boundary_host" "backend_servers" {
-  for_each        = var.backend_server_ips
+resource "boundary_host" "linux_servers" {
+  for_each        = var.linux_server_ips
   type            = "static"
-  name            = "backend_server_service_${each.value}"
-  description     = "Backend server host"
+  name            = "linux_server_service_${each.value}"
+  description     = "Linux server host"
   address         = each.key
-  host_catalog_id = boundary_host_catalog.backend_servers.id
+  host_catalog_id = boundary_host_catalog.linux_servers.id
 }
 
 # Create host set
-resource "boundary_host_set" "backend_servers_ssh" {
+resource "boundary_host_set" "linux_servers_ssh" {
   type            = "static"
-  name            = "backend_servers_ssh"
-  description     = "Host set for backend servers"
-  host_catalog_id = boundary_host_catalog.backend_servers.id
-  host_ids        = [for host in boundary_host.backend_servers : host.id]
+  name            = "linux_servers_ssh"
+  description     = "Host set for Linux servers"
+  host_catalog_id = boundary_host_catalog.linux_servers.id
+  host_ids        = [for host in boundary_host.linux_servers : host.id]
 }
 
-# create target for accessing backend servers on port :22
-resource "boundary_target" "backend_servers_ssh" {
+# create target for accessing linux servers on port :22
+resource "boundary_target" "linux_servers_ssh" {
   type         = "tcp"
-  name         = "Backend servers"
-  description  = "Backend SSH target"
+  name         = "Linux servers"
+  description  = "Linux SSH target"
   scope_id     = boundary_scope.tam_infra.id
   default_port = "22"
 
   host_set_ids = [
-    boundary_host_set.backend_servers_ssh.id
+    boundary_host_set.linux_servers_ssh.id
   ]
 }
 

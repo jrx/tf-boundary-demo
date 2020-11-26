@@ -53,19 +53,24 @@ variable "boundary_instance_type" {
   default     = "t3.micro"
 }
 
-variable "num_test" {
-  description = "Specify the amount of test machines."
+variable "num_linux" {
+  description = "Specify the amount of Linux machines."
   default     = 2
 }
 
-variable "test_instance_type" {
-  description = "Boundary server instance type."
+variable "linux_instance_type" {
+  description = "Linux server instance type."
   default     = "t3.micro"
 }
 
 variable "num_win" {
-  description = "Specify the amount of test machines."
+  description = "Specify the amount of Windows machines."
   default     = 1
+}
+
+variable "win_instance_type" {
+  description = "Windows server instance type."
+  default     = "t3.micro"
 }
 
 variable "win_instance_username" {

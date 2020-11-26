@@ -6,11 +6,11 @@ variable "users" {
   ]
 }
 
-variable "backend_server_ips" {
+variable "linux_server_ips" {
   type = set(string)
   default = [
-    "10.0.1.116",
-    "10.0.2.152",
+    "10.0.1.183",
+    "10.0.2.24",
   ]
 }
 
