@@ -39,7 +39,7 @@ resource "null_resource" "ansible" {
 
   provisioner "remote-exec" {
     inline = [
-      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-s${count.index} BOUNDARY_VERSION=${var.boundary_version}' boundary-controller.yml",
+      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-s${count.index} BOUNDARY_LICENSE=${var.boundary_license} BOUNDARY_VERSION=${var.boundary_version}' boundary-controller.yml",
     ]
   }
 
@@ -80,7 +80,7 @@ data "aws_ami" "windows-ami" {
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-2020.08.12"]
+    values = ["Windows_Server-2019-English-Full-Base-2024.05.15"]
   }
 
   filter {

@@ -1,6 +1,7 @@
 [Unit]
 Description=Boundary
 [Service]
+EnvironmentFile=/etc/boundary.d/env.conf
 ExecStart=/usr/local/bin/boundary dev
 User=boundary
 Group=docker

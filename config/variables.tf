@@ -2,21 +2,21 @@ variable "users" {
   type = set(string)
   default = [
     "Jan",
-    "Marc",
+    "Andrei",
   ]
 }
 
 variable "linux_server_ips" {
   type = set(string)
   default = [
-    "10.0.1.183",
-    "10.0.2.24",
+    "10.0.1.247",
+    "10.0.2.196",
   ]
 }
 
 variable "windows_server_ips" {
   type = set(string)
   default = [
-    "10.0.1.130",
+    "10.0.1.231",
   ]
 }

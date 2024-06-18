@@ -30,12 +30,13 @@ variable "amis" {
   type = map(string)
   default = {
     # eu-central-1 = "ami-337be65c" # centos 7
-    eu-north-1 = "ami-026f0eb2e8006617d" # centos 7
+    # eu-north-1 = "ami-026f0eb2e8006617d" # centos 7
+    eu-north-1 = "ami-07c0f40b66e9893c4" # rocky linux 9
   }
 }
 
 variable "instance_username" {
-  default = "centos"
+  default = "rocky"
 }
 
 variable "num_boundary" {
@@ -44,13 +45,18 @@ variable "num_boundary" {
 }
 
 variable "boundary_version" {
-  default     = "0.1.2"
+  default     = "0.16.1+ent"
   description = "Specifies which Boundary version instruction to use."
 }
 
 variable "boundary_instance_type" {
   description = "Boundary server instance type."
-  default     = "t3.micro"
+  default     = "t3.small"
+}
+
+variable "boundary_license" {
+  default     = ""
+  description = "Boundary license string."
 }
 
 variable "num_linux" {
@@ -60,7 +66,7 @@ variable "num_linux" {
 
 variable "linux_instance_type" {
   description = "Linux server instance type."
-  default     = "t3.micro"
+  default     = "t3.small"
 }
 
 variable "num_win" {
@@ -70,7 +76,7 @@ variable "num_win" {
 
 variable "win_instance_type" {
   description = "Windows server instance type."
-  default     = "t3.micro"
+  default     = "t3.small"
 }
 
 variable "win_instance_username" {
