@@ -55,7 +55,7 @@ resource "null_resource" "ansible" {
 
   provisioner "remote-exec" {
     inline = [
-      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-c${count.index} BOUNDARY_LICENSE=${var.boundary_license} KMS_KEY_ROOT=${aws_kms_key.root.id} KMS_KEY_RECOVERY=${aws_kms_key.recovery.id} KMS_KEY_WORKER_AUTH=${aws_kms_key.worker-auth.id} KMS_KEY_BSR=${aws_kms_key.bsr.id} AWS_REGION=${var.aws_region} DATABASE_NAME=${module.rds.database_name} DATABASE_ENDPOINT=${module.rds.endpoint} DATABASE_PASSWORD=${module.rds.database_password} DATABASE_USERNAME=${var.boundary_database_username} BOUNDARY_VERSION=${var.boundary_version}' boundary-controller.yml",
+      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-c${count.index} BOUNDARY_LICENSE=${var.boundary_license} KMS_KEY_ROOT=${aws_kms_key.root.id} KMS_KEY_RECOVERY=${aws_kms_key.recovery.id} KMS_KEY_WORKER_AUTH=${aws_kms_key.worker-auth.id} KMS_KEY_BSR=${aws_kms_key.bsr.id} AWS_REGION=${var.aws_region} DATABASE_NAME=${module.rds.database_name} DATABASE_ENDPOINT=${module.rds.endpoint} DATABASE_PASSWORD=${module.rds.database_password} DATABASE_USERNAME=${var.boundary_database_username} BOUNDARY_VERSION=${var.boundary_version}' all.yml",
     ]
   }
 

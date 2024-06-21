@@ -8,10 +8,11 @@ terraform {
 }
 
 provider "boundary" {
-  addr                   = "http://127.0.0.1:9200"
-  auth_method_id         = "ampw_1234567890"
-  auth_method_login_name = "admin"
-  auth_method_password   = "password"
+  addr                   = var.addr
+  tls_insecure           = true
+  auth_method_id         = var.auth_method_id
+  auth_method_login_name = var.auth_method_login_name
+  auth_method_password   = var.auth_method_password
 }
 
 resource "boundary_scope" "global" {

@@ -1,0 +1,7 @@
+---
+- name: install pre-requisites
+  ansible.builtin.import_playbook: prereqs.yml
+- name: install controller
+  ansible.builtin.import_playbook: boundary-controller.yml
+- name: install worker
+  ansible.builtin.import_playbook: boundary-worker.yml

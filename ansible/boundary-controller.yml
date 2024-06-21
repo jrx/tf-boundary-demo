@@ -1,7 +1,4 @@
 ---
-- name: install pre-requisites
-  ansible.builtin.import_playbook: prereqs.yml
-
 - name: install boundary controller
   hosts: all
   serial: 1

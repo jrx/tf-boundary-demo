@@ -1,0 +1,61 @@
+---
+- name: install pre-requisites
+  ansible.builtin.import_playbook: prereqs.yml
+
+- name: install boundary worker
+  hosts: all
+  serial: 1
+  become: true
+
+  vars:
+    BOUNDARY_VERSION: "0.1.2"
+    BOUNDARY_LICENSE: ""
+    CLUSTER_NAME: "Boundary-Example"
+    NODE_NAME: "Boundary-Worker"
+    ADDR: "127.0.0.1"
+
+  tasks:
+
+  - name: create auth storage directory
+    file: 
+      path: /var/lib/boundary
+      state: directory
+      recurse: yes
+      owner: boundary
+      group: boundary
+
+  - name: create logging directory
+    file: 
+      path: /var/log/boundary
+      state: directory
+      recurse: yes
+      owner: boundary
+      group: boundary
+
+  - name: configure env file
+    template:
+      src: ./files/boundary-env.conf.j2
+      dest: /etc/boundary.d/boundary.env
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: configure worker
+    template:
+      src: ./files/boundary-worker.hcl.j2
+      dest: /etc/boundary.d/worker.hcl
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: configure systemd
+    copy:
+      src: ./files/boundary-worker.service
+      dest: /etc/systemd/system/boundary-worker.service
+
+  - name: start boundary worker
+    systemd:
+      name: boundary-worker.service
+      state: restarted
+      enabled: yes
+      daemon_reload: yes
