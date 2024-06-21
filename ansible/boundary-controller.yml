@@ -1,4 +1,7 @@
 ---
+- name: install pre-requisites
+  ansible.builtin.import_playbook: prereqs.yml
+
 - name: install boundary controller
   hosts: all
   serial: 1
@@ -13,99 +16,58 @@
 
   tasks:
 
-  - name: install epel-release
-    yum:
-      name: epel-release
-      state: present
-
-  - name: install common packages
-    yum:
-      name:
-        - unzip
-        - vim
-        - jq
-      state: present
-
-  - name: disable selinux
-    selinux:
-      policy: targeted
-      state: permissive
-
-  - name: enable docker repo
-    yum_repository:
-      name: docker-ce
-      description: Docker CE Repository
-      baseurl: "https://download.docker.com/linux/centos/9/$basearch/stable"
-      enabled: yes
-      gpgcheck: yes
-      gpgkey: https://download.docker.com/linux/centos/gpg
-
-  - name: preinstall containerd
-    yum:
-      name: containerd.io
-      update_cache: true
-      state: present
-
-  - name: install docker
-    yum:
-      name: "docker-ce"
-      update_cache: true
-      state: present
-    register: yum_docker_install
-    until: yum_docker_install is success
-    retries: 3
-    delay: 60
-
-  - name: enable docker
-    systemd:
-      name: docker
-      state: started
-      enabled: true
-
-  - name: ensure docker group exists
-    group:
-      name: docker
-      state: present
-
-  - name: download binary
-    unarchive:
-      src: "https://releases.hashicorp.com/boundary/{{ BOUNDARY_VERSION }}/boundary_{{ BOUNDARY_VERSION }}_linux_amd64.zip"
-      dest: /usr/local/bin
-      remote_src: yes
-      mode: 0755
-      owner: root
-      group: root
-
-  - name: set cap_ipc_lock=+ep
-    capabilities:
-      path: /usr/local/bin/boundary
-      capability: cap_ipc_lock=+ep
-      state: present
-
-  - name: Add the system user 'boundary'
-    user:
-      name: boundary
-      home: /etc/boundary.d
-      shell: /bin/false
-      system: yes
-
-  - name: create config directory
+  - name: create tls directory
     file: 
-      path: /etc/boundary.d/
+      path: /etc/boundary.d/tls/
       state: directory
       recurse: yes
       owner: boundary
       group: boundary
 
-  - name: Add user boundary' to the 'docker' group
-    user:
-      name: boundary
-      group: docker
+  - name: create tls cert file
+    copy:
+      src: ./files/boundary.crt
+      dest: /etc/boundary.d/tls/boundary-cert.pem
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: create tls key file
+    copy:
+      src: ./files/boundary.key
+      dest: /etc/boundary.d/tls/boundary-key.pem
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: create tls client ca file
+    copy:
+      src: ./files/boundary.ca
+      dest: /etc/boundary.d/tls/boundary-ca.pem
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: create logging directory
+    file: 
+      path: /var/log/boundary
+      state: directory
+      recurse: yes
+      owner: boundary
+      group: boundary
 
   - name: configure env file
     template:
       src: ./files/boundary-env.conf.j2
-      dest: /etc/boundary.d/env.conf
+      dest: /etc/boundary.d/boundary.env
+      mode: 0640
+      owner: boundary
+      group: boundary
+
+  - name: configure controller
+    template:
+      src: ./files/boundary-controller.hcl.j2
+      dest: /etc/boundary.d/controller.hcl
       mode: 0640
       owner: boundary
       group: boundary

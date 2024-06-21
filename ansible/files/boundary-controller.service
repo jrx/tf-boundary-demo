@@ -1,10 +1,23 @@
 [Unit]
-Description=Boundary
+Description="HashiCorp Boundary - Identity-based access management for dynamic infrastructure"
+Documentation=https://www.boundaryproject.io/docs
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
 [Service]
-EnvironmentFile=/etc/boundary.d/env.conf
-ExecStart=/usr/local/bin/boundary dev
+EnvironmentFile=-/etc/boundary.d/boundary.env
 User=boundary
-Group=docker
+Group=boundary
+ProtectSystem=full
+ProtectHome=read-only
+ExecStart=/usr/local/bin/boundary server -config=/etc/boundary.d/controller.hcl
+ExecReload=/bin/kill --signal HUP $MAINPID
+KillMode=process
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
 LimitMEMLOCK=infinity
+
 [Install]
 WantedBy=multi-user.target

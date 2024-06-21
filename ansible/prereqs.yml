@@ -1,0 +1,69 @@
+---
+- name: install pre-requisites
+  hosts: all
+  serial: 1
+  become: true
+  tasks:
+
+  - name: install epel-release
+    yum:
+      name: epel-release
+      state: present
+
+  - name: install common packages
+    yum:
+      name:
+        - unzip
+        - vim
+        - jq
+      state: present
+
+  - name: disable swap
+    shell: |
+      swapoff -a
+
+  - name: remove swapfile from /etc/fstab
+    mount:
+      name: "{{ item }}"
+      fstype: swap
+      state: absent
+    with_items:
+      - swap
+
+  - name: download binary
+    unarchive:
+      src: "https://releases.hashicorp.com/boundary/{{ BOUNDARY_VERSION }}+ent/boundary_{{ BOUNDARY_VERSION }}+ent_linux_amd64.zip"
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+
+  # - name: add hashicorp repository
+  #   yum_repository:
+  #     name: hashicorp
+  #     description: HashiCorp Stable
+  #     baseurl: https://rpm.releases.hashicorp.com/RHEL/9/x86_64/stable
+  #     gpgcheck: true
+  #     gpgkey: https://rpm.releases.hashicorp.com/gpg
+  #     metalink: https://rpm.releases.hashicorp.com/RHEL/9/x86_64/stable/repodata/repomd.xml
+
+  # - name: install boundary binary
+  #   yum:
+  #     name: boundary-enterprise-{{ BOUNDARY_VERSION }}+ent-1
+  #     state: present
+
+  - name: Add the system user 'boundary'
+    user:
+      name: boundary
+      home: /etc/boundary.d
+      shell: /bin/false
+      system: yes
+
+  - name: create config directory
+    file: 
+      path: /etc/boundary.d/
+      state: directory
+      recurse: yes
+      owner: boundary
+      group: boundary

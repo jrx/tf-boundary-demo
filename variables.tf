@@ -21,7 +21,7 @@ variable "aws_region" {
 }
 
 variable "aws_azs" {
-  type        = list
+  type        = list(any)
   description = "List of the availability zones to use."
   default     = ["eu-north-1a", "eu-north-1b", "eu-north-1c"]
 }
@@ -45,7 +45,7 @@ variable "num_boundary" {
 }
 
 variable "boundary_version" {
-  default     = "0.16.1+ent"
+  default     = "0.16.2"
   description = "Specifies which Boundary version instruction to use."
 }
 
@@ -57,6 +57,18 @@ variable "boundary_instance_type" {
 variable "boundary_license" {
   default     = ""
   description = "Boundary license string."
+}
+
+variable "boundary_database_name" {
+  type        = string
+  description = "name of the initial database"
+  default     = "boundary"
+}
+
+variable "boundary_database_username" {
+  type        = string
+  description = "username of the initial user"
+  default     = "boundary"
 }
 
 variable "num_linux" {

@@ -1,0 +1,113 @@
+disable_mlock = true
+
+# API listener configuration block
+listener "tcp" {
+  address = "0.0.0.0:9200"
+  purpose = "api"
+
+  tls_disable   = false
+  tls_cert_file = "/etc/boundary.d/tls/boundary-cert.pem"
+  tls_key_file  = "/etc/boundary.d/tls/boundary-key.pem"
+}
+
+# Data-plane listener configuration block (used for worker coordination)
+listener "tcp" {
+  address = "0.0.0.0:9201"
+  purpose = "cluster"
+}
+
+# Ops listener for operations like health checks for load balancers
+listener "tcp" {
+  address = "0.0.0.0:9203"
+  purpose = "ops"
+
+  tls_disable   = false
+  tls_cert_file = "/etc/boundary.d/tls/boundary-cert.pem"
+  tls_key_file  = "/etc/boundary.d/tls/boundary-key.pem"
+}
+
+# Controller configuration block
+controller {
+  name = "{{ NODE_NAME }}"
+  description = "Boundary controller {{ NODE_NAME }}"
+
+  # This is the public hostname or IP where the workers can reach the
+  # controller. This should typically be a load balancer address
+  public_cluster_addr = "{{ ADDR }}"
+
+  # Enterprise license file, can also be the raw value or env:// value
+  license = "env://BOUNDARY_LICENSE"
+
+  # After receiving a shutdown signal, Boundary will wait 10s before initiating the shutdown process.
+  graceful_shutdown_wait_duration = "10s"
+
+  # Database URL for postgres. This is set in boundary.env and
+  #consumed via the “env://” notation.
+  database {
+      url = "env://POSTGRESQL_CONNECTION_STRING"
+  }
+}
+
+# Events (logging) configuration. This
+# configures logging for ALL events to both
+# stderr and a file at /var/log/boundary/controller.log
+events {
+  audit_enabled       = false
+  sysevents_enabled   = false
+  observations_enable = false
+  sink "stderr" {
+    name = "all-events"
+    description = "All events sent to stderr"
+    event_types = ["*"]
+    format = "cloudevents-json"
+  }
+  sink {
+    name = "file-sink"
+    description = "All events sent to a file"
+    event_types = ["*"]
+    format = "cloudevents-json"
+    file {
+      path = "/var/log/boundary"
+      file_name = "controller.log"
+    }
+    audit_config {
+      audit_filter_overrides {
+        sensitive = "redact"
+        secret    = "redact"
+      }
+    }
+  }
+}
+
+kms "awskms" {
+  purpose    = "root"
+  region     = "{{ AWS_REGION }}"
+  kms_key_id = "{{ KMS_KEY_ROOT }}"
+  #endpoint   = "https://vpce-0e1bb1852241f8cc6-pzi0do8n.kms.{{ AWS_REGION }}.vpce.amazonaws.com"
+}
+
+# Recovery KMS Key
+kms "awskms" {
+  purpose    = "recovery"
+  region     = "{{ AWS_REGION }}"
+  kms_key_id = "{{ KMS_KEY_RECOVERY }}"
+  #endpoint   = "https://vpce-0e1bb1852241f8cc6-pzi0do8n.kms.{{ AWS_REGION }}.vpce.amazonaws.com"
+}
+
+# Worker-Auth KMS Key (optional, only needed if you use
+# KMS authenticated workers)
+kms "awskms" {
+  purpose    = "worker-auth"
+  region     = "{{ AWS_REGION }}"
+  kms_key_id = "{{ KMS_KEY_WORKER_AUTH }}"
+  #endpoint   = "https://vpce-0e1bb1852241f8cc6-pzi0do8n.kms.{{ AWS_REGION }}.vpce.amazonaws.com"
+}
+
+# BSR KMS Key (optional, only needed if you use the
+# session recording feature)
+kms "awskms" {
+  purpose    = "bsr"
+  region     = "{{ AWS_REGION }}"
+  kms_key_id = "{{ KMS_KEY_BSR }}"
+  #endpoint   = "https://vpce-0e1bb1852241f8cc6-pzi0do8n.kms.{{ AWS_REGION }}.vpce.amazonaws.com"
+}

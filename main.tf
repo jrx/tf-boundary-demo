@@ -8,6 +8,7 @@ resource "aws_instance" "boundary" {
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.default.id]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.boundary_profile.id
   count                       = var.num_boundary
 
   availability_zone = data.terraform_remote_state.vpc.outputs.aws_azs[count.index % length(data.terraform_remote_state.vpc.outputs.aws_azs)]
@@ -27,8 +28,8 @@ resource "null_resource" "ansible" {
   provisioner "remote-exec" {
     inline = [
       "mkdir -p /home/${var.instance_username}/ansible",
-      "sudo yum -y install epel-release",
-      "sudo yum -y install ansible",
+      "sudo yum -y install python3-pip",
+      "sudo python3 -m pip install ansible --quiet",
     ]
   }
 
@@ -37,9 +38,24 @@ resource "null_resource" "ansible" {
     destination = "/home/${var.instance_username}/ansible/"
   }
 
+  provisioner "file" {
+    content     = tls_locally_signed_cert.server.cert_pem
+    destination = "/home/${var.instance_username}/ansible/files/boundary.crt"
+  }
+
+  provisioner "file" {
+    content     = tls_private_key.server.private_key_pem
+    destination = "/home/${var.instance_username}/ansible/files/boundary.key"
+  }
+
+  provisioner "file" {
+    content     = tls_self_signed_cert.ca.cert_pem
+    destination = "/home/${var.instance_username}/ansible/files/boundary.ca"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-s${count.index} BOUNDARY_LICENSE=${var.boundary_license} BOUNDARY_VERSION=${var.boundary_version}' boundary-controller.yml",
+      "cd ansible; ansible-playbook -c local -i \"localhost,\" -e 'ADDR=${element(aws_instance.boundary.*.private_ip, count.index)} NODE_NAME=boundary-c${count.index} BOUNDARY_LICENSE=${var.boundary_license} KMS_KEY_ROOT=${aws_kms_key.root.id} KMS_KEY_RECOVERY=${aws_kms_key.recovery.id} KMS_KEY_WORKER_AUTH=${aws_kms_key.worker-auth.id} KMS_KEY_BSR=${aws_kms_key.bsr.id} AWS_REGION=${var.aws_region} DATABASE_NAME=${module.rds.database_name} DATABASE_ENDPOINT=${module.rds.endpoint} DATABASE_PASSWORD=${module.rds.database_password} DATABASE_USERNAME=${var.boundary_database_username} BOUNDARY_VERSION=${var.boundary_version}' boundary-controller.yml",
     ]
   }
 
@@ -53,6 +69,8 @@ resource "null_resource" "ansible" {
   triggers = {
     always_run = timestamp()
   }
+
+  depends_on = [module.rds]
 }
 
 resource "aws_instance" "linux" {
