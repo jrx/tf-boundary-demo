@@ -98,7 +98,7 @@ data "aws_ami" "windows-ami" {
 
   filter {
     name   = "name"
-    values = ["Windows_Server-2019-English-Full-Base-2024.05.15"]
+    values = ["Windows_Server-2025-English-Full-Base-2025.03.12"]
   }
 
   filter {
