@@ -39,17 +39,17 @@ resource "null_resource" "ansible" {
   }
 
   provisioner "file" {
-    content     = tls_locally_signed_cert.server.cert_pem
+    source      = "./boundary.crt"
     destination = "/home/${var.instance_username}/ansible/files/boundary.crt"
   }
 
   provisioner "file" {
-    content     = tls_private_key.server.private_key_pem
+    source      = "./boundary.key"
     destination = "/home/${var.instance_username}/ansible/files/boundary.key"
   }
 
   provisioner "file" {
-    content     = tls_self_signed_cert.ca.cert_pem
+    source      = "./boundary.ca"
     destination = "/home/${var.instance_username}/ansible/files/boundary.ca"
   }
 

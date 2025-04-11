@@ -10,3 +10,6 @@ override.tf.json
 *_override.tf.json
 backend.hcl
 .terraform.lock.hcl
+boundary.ca
+boundary.crt
+boundary.key
