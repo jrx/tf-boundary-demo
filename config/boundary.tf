@@ -1,20 +1,3 @@
-terraform {
-  required_providers {
-    boundary = {
-      source  = "hashicorp/boundary"
-      version = "1.1.15"
-    }
-  }
-}
-
-provider "boundary" {
-  addr                   = var.addr
-  tls_insecure           = true
-  auth_method_id         = var.auth_method_id
-  auth_method_login_name = var.auth_method_login_name
-  auth_method_password   = var.auth_method_password
-}
-
 resource "boundary_scope" "global" {
   global_scope = true
   description  = "My first global scope!"
@@ -128,6 +111,11 @@ resource "boundary_target" "linux_servers_ssh" {
 
   host_source_ids = [
     boundary_host_set_static.linux_servers_ssh.id
+  ]
+
+  injected_application_credential_source_ids = [
+    # boundary_credential_library_vault_ssh_certificate.dynamic_credential_library.id,
+    boundary_credential_library_vault.static_credential_library.id,
   ]
 }
 

@@ -13,3 +13,4 @@ backend.hcl
 boundary.ca
 boundary.crt
 boundary.key
+ca-key.pub

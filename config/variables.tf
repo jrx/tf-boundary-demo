@@ -40,3 +40,25 @@ variable "windows_server_ips" {
     "10.0.1.231",
   ]
 }
+
+variable "vault_lb" {
+  type    = string
+  default = "https://127.0.0.1:8200"
+}
+
+variable "vault_address" {
+  type    = string
+  default = "https://127.0.0.1:8200"
+}
+
+variable "vault_token" {
+  type = string
+}
+
+variable "linux_private_key" {
+  description = "SSH private key to access the Linux instances."
+}
+
+variable "aws-auth-arn" {
+  type = string
+}
