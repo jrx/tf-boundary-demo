@@ -15,7 +15,7 @@ worker {
   initial_upstreams = ["127.0.0.1:9201"]
   auth_storage_path = "/var/lib/boundary"
   tags {
-    type = ["{{ NODE_NAME }}", "worker", "upstream"]
+    type = ["{{ NODE_NAME }}", "worker", "upstream", "vault"]
   }
 }
 
