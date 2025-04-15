@@ -120,13 +120,13 @@ resource "boundary_target" "linux_servers_ssh" {
 }
 
 resource "boundary_alias_target" "linux_servers_ssh" {
-  for_each                  = boundary_host_static.linux_servers
-  name                      = "linux_alias_target"
-  description               = "Linux SSH alias"
-  scope_id                  = "global"
-  value                     = "linux.boundary"
-  destination_id            = boundary_target.linux_servers_ssh.id
-  authorize_session_host_id = boundary_host_static.linux_servers[each.key].id
+  # for_each                  = boundary_host_static.linux_servers
+  name           = "linux_alias_target"
+  description    = "Linux SSH alias"
+  scope_id       = "global"
+  value          = "linux.boundary"
+  destination_id = boundary_target.linux_servers_ssh.id
+  # authorize_session_host_id = boundary_host_static.linux_servers[each.key].id
 }
 
 # Create host catalog
@@ -173,11 +173,11 @@ resource "boundary_target" "windows_servers_rdp" {
 }
 
 resource "boundary_alias_target" "windows_servers_rdp" {
-  for_each                  = boundary_host_static.windows_servers
-  name                      = "windows_alias_target"
-  description               = "Windows RDP alias"
-  scope_id                  = "global"
-  value                     = "windows.boundary"
-  destination_id            = boundary_target.windows_servers_rdp.id
-  authorize_session_host_id = boundary_host_static.windows_servers[each.key].id
+  # for_each                  = boundary_host_static.windows_servers
+  name           = "windows_alias_target"
+  description    = "Windows RDP alias"
+  scope_id       = "global"
+  value          = "windows.boundary"
+  destination_id = boundary_target.windows_servers_rdp.id
+  # authorize_session_host_id = boundary_host_static.windows_servers[each.key].id
 }

@@ -12,7 +12,7 @@ resource "vault_ssh_secret_backend_role" "boundary_client_role" {
 
   key_type                = "ca"
   allow_user_certificates = true
-  default_user            = "admin"
+  default_user            = "rocky"
 
   default_extensions = {
     permit-pty = ""
