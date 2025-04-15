@@ -62,3 +62,13 @@ variable "linux_private_key" {
 variable "aws-auth-arn" {
   type = string
 }
+
+variable "win_instance_username" {
+  description = "Windows server username."
+  default     = "Boundary"
+}
+
+variable "win_instance_password" {
+  description = "Windows server password."
+  default     = "S3CRET!123"
+}

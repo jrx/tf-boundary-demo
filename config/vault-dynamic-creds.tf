@@ -39,8 +39,8 @@ resource "boundary_credential_library_vault_ssh_certificate" "dynamic_credential
 
 # Configure the CA for the SSH secrets engine
 resource "vault_ssh_secret_backend_ca" "ssh_ca_config" {
-  backend               = vault_mount.ssh_client_signer.path
-  generate_signing_key  = true
+  backend              = vault_mount.ssh_client_signer.path
+  generate_signing_key = true
 }
 
 # Output the public key to a local file

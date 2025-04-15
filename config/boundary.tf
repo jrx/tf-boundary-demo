@@ -115,7 +115,7 @@ resource "boundary_target" "linux_servers_ssh" {
 
   injected_application_credential_source_ids = [
     # boundary_credential_library_vault_ssh_certificate.dynamic_credential_library.id,
-    boundary_credential_library_vault.static_credential_library.id,
+    boundary_credential_library_vault.static_linux_library.id,
   ]
 }
 
@@ -165,6 +165,10 @@ resource "boundary_target" "windows_servers_rdp" {
 
   host_source_ids = [
     boundary_host_set_static.windows_servers_rdp.id
+  ]
+
+  brokered_credential_source_ids = [
+    boundary_credential_library_vault.static_windows_library.id,
   ]
 }
 
